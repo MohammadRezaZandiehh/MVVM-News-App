@@ -7,6 +7,7 @@ import com.example.mvvmnewsapp.ui.model.NewsResponse
 import com.example.mvvmnewsapp.ui.repository.NewsRepository
 import com.example.mvvmnewsapp.ui.util.Resource
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import retrofit2.Response
 
 class NewsViewModel(
@@ -16,8 +17,13 @@ class NewsViewModel(
     val breakingNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
     var breakingNewsPage = 1
 
+    val searchNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
+    var searchNewsPage = 1
+
+
     init {
         getBreakingNews("us")
+//        searchNews("us")
     }
     //block e bala daghighan jaei hast k vaghti ye object az in NewsViewModel emoon sakhte mishe , request ro b API mifreste.
 
@@ -35,11 +41,25 @@ class NewsViewModel(
 //            breakingNews.postValue(error)
 //        }
 
+    fun searchNews(countryCode: String) = viewModelScope.launch {
+        searchNews.postValue(Resource.Loading())
+        val response = newsRepository.searchNews(countryCode, searchNewsPage)
+        searchNews.postValue(handleSearchNewsResponse(response))
+    }
 
 
+    private fun handleBreakingNewsResponse(response: Response<NewsResponse>): Resource<NewsResponse> {
+        if (response.isSuccessful) {
+            response.body()?.let { resultResponse ->
+                return Resource.Success(resultResponse)
+            }
+        }
+        return Resource.Error(response.message())
+    }
 
-    private fun handleBreakingNewsResponse(response: Response<NewsResponse>) : Resource<NewsResponse> {
-        if(response.isSuccessful) {
+
+    private fun handleSearchNewsResponse(response: Response<NewsResponse>): Resource<NewsResponse> {
+        if (response.isSuccessful) {
             response.body()?.let { resultResponse ->
                 return Resource.Success(resultResponse)
             }
