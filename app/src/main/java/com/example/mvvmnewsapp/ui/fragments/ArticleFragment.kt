@@ -25,7 +25,7 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
         val article = args.article
         webView.apply {
             webViewClient = WebViewClient()
-            loadUrl(article.url)
+            loadUrl(article?.url)
         }
 
         fab.setOnClickListener {
