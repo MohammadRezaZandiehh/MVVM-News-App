@@ -1,9 +1,13 @@
 package com.example.mvvmnewsapp.model
 
-import com.example.mvvmnewsapp.model.Article
+
+import com.google.gson.annotations.SerializedName
 
 data class NewsResponse(
-    val articles: MutableList<Article>,
-    val status: String,
-    val totalResults: Int
+    @SerializedName("articles")
+    var articles: List<Article>,
+    @SerializedName("status")
+    var status: String,
+    @SerializedName("totalResults")
+    var totalResults: Int
 )
