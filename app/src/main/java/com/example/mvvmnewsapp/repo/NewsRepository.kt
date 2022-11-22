@@ -1,8 +1,11 @@
 package com.example.mvvmnewsapp.repo
 
+import com.example.mvvmnewsapp.api.RetrofitInstance
 import com.example.mvvmnewsapp.db.ArticleDatabase
 
-class NewsRepository (
+class NewsRepository(
     val db: ArticleDatabase
-        ){
+) {
+    suspend fun getBreakingNews(countryCode: String, pageNumber: Int) =
+        RetrofitInstance.api.getBreakingNews(countryCode, pageNumber)
 }
