@@ -3,7 +3,7 @@ package com.example.mvvmnewsapp.db
 import androidx.room.TypeConverter
 import com.example.mvvmnewsapp.model.Source
 
-class Convertors {
+class Converters {
 
     @TypeConverter
     fun fromSource(source: Source): String {

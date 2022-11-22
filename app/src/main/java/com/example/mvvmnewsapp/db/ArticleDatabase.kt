@@ -11,7 +11,7 @@ import com.example.mvvmnewsapp.model.Article
     entities = [Article::class],
     version = 1
 )
-@TypeConverters(Convertors::class)
+@TypeConverters(Converters::class)
 abstract class ArticleDatabase : RoomDatabase() {
 
     abstract fun getArticleDao(): ArticleDao
