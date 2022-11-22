@@ -1,4 +1,6 @@
-package com.example.mvvmnewsapp.ui.model
+package com.example.mvvmnewsapp.model
+
+import com.example.mvvmnewsapp.model.Article
 
 data class NewsResponse(
     val articles: MutableList<Article>,
