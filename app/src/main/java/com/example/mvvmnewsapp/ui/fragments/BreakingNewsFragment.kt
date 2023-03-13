@@ -1,36 +1,32 @@
 package com.example.mvvmnewsapp.ui.fragments
 
-import android.app.DownloadManager
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.AbsListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mvvmnewsapp.R
+import com.example.mvvmnewsapp.adapter.CallbackForGetNewsWithId
+import com.example.mvvmnewsapp.adapter.CallbackForGetNewsWithId22
 import com.example.mvvmnewsapp.adapter.NewsAdapter
-import com.example.mvvmnewsapp.model.NewsResponse
+import com.example.mvvmnewsapp.adapter.NewsAdapter2222
 import com.example.mvvmnewsapp.ui.NewsActivity
 import com.example.mvvmnewsapp.utils.Constants.Companion.QUERY_PAGE_SIZE
 import com.example.mvvmnewsapp.utils.Resource
 import com.example.mvvmnewsapp.viewModel.NewsViewModel
 import kotlinx.android.synthetic.main.fragment_breaking_news.*
 import kotlinx.android.synthetic.main.fragment_breaking_news.paginationProgressBar
-import kotlinx.android.synthetic.main.fragment_search_news.*
 import kotlinx.android.synthetic.main.item_error_message.*
 
 
-class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
+class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news), CallbackForGetNewsWithId22 {
 
     lateinit var viewModel: NewsViewModel
-    lateinit var newsAdapter: NewsAdapter
-    private val TAG = "BreakingNewsFragment"
+    lateinit var newsAdapter2222: NewsAdapter2222
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,7 +34,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
         viewModel = (activity as NewsActivity).viewModel
         setUpRecyclerView()
 
-        newsAdapter.setOnItemClickListener {
+        newsAdapter2222.setOnItemClickListener {
             val bundle = Bundle().apply {
                 putSerializable("article", it)
             }
@@ -54,7 +50,11 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
                     hideProgressBar()
                     hideErrorMessage()
                     response.data?.let { newsResponse ->
-                        newsAdapter.differ.submitList(newsResponse.articles.toList())
+                        newsResponse.articles.forEach{
+                            it.url?.let { it1 -> newsAdapter2222.addPostGroupData(it1, newsResponse.articles) }
+                        }
+//                        newsAdapter.differ.submitList(newsResponse.articles.toList())
+                        newsAdapter2222.updateRV(newsResponse.articles.toList())
                         val totalPages = newsResponse.totalResults / QUERY_PAGE_SIZE + 2
                         isLastPage = viewModel.breakingNewsPage == totalPages
                     }
@@ -62,7 +62,8 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
                 is Resource.Error -> {
                     hideProgressBar()
                     response.message?.let { message ->
-                        Toast.makeText(activity, "An error occured: $message", Toast.LENGTH_LONG).show()
+                        Toast.makeText(activity, "An error occured: $message", Toast.LENGTH_LONG)
+                            .show()
                         showErrorMessage(message)
                     }
                 }
@@ -117,7 +118,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
             val shouldPaginate = isNotLoadingAndNotLastPage && isAtLastItem && isNotAtBeginning &&
                     isTotalMoreThanVisible && isScrolling
             if (shouldPaginate) {
-                viewModel.getBreakingNews("us")
+//                viewModel.getBreakingNews("us")
                 isScrolling = false
             } else {
                 rvBreakingNews.setPadding(0, 0, 0, 0)
@@ -135,11 +136,17 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
 
 
     private fun setUpRecyclerView() {
-        newsAdapter = NewsAdapter()
+        newsAdapter2222 = NewsAdapter2222(this@BreakingNewsFragment)
         rvBreakingNews.apply {
-            adapter = newsAdapter
+            adapter = newsAdapter2222
             layoutManager = LinearLayoutManager(activity)
             addOnScrollListener(this@BreakingNewsFragment.scrollListener)
+        }
+    }
+
+    override fun getNewsWithCallback22(url: String?) {
+        if (url != null) {
+            viewModel.getBreakingNews("us", url)
         }
     }
 }

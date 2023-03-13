@@ -30,27 +30,31 @@ class NewsViewModel(
     val searchNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
     var searchNewsPage = 1
     private var searchNewsResponse: NewsResponse? = null
-    var newSearchQuery:String? = null
-    var oldSearchQuery:String? = null
+    var newSearchQuery: String? = null
+    var oldSearchQuery: String? = null
 
 
     init {
-        getBreakingNews("us")
+        /*getBreakingNews(
+            "us",
+            "https://www.investors.com/market-trend/stock-market-today/dow-jones-futures-sp-500-breaks-support-as-svb-financial-slams-bank-stocks-jobs-report-due/"
+        )*/
+        getBreakingNews("us", "https://www.investors.com/market-trend/stock-market-today/dow-jones-futures-sp-500-breaks-support-as-svb-financial-slams-bank-stocks-jobs-report-due/")
     }
 
-    fun getBreakingNews(countryCode: String) = viewModelScope.launch {
-        safeBreakingNewsCall(countryCode)
+    fun getBreakingNews(countryCode: String, url: String) = viewModelScope.launch {
+        safeBreakingNewsCall(countryCode, url)
     }
 
     fun searchNews(searchQuery: String) = viewModelScope.launch {
         safeSearchNewsCall(searchQuery)
     }
 
-    private fun handleBreakingNewsResponse(response: Response<NewsResponse>) : Resource<NewsResponse> {
-        if(response.isSuccessful) {
+    private fun handleBreakingNewsResponse(response: Response<NewsResponse>): Resource<NewsResponse> {
+        if (response.isSuccessful) {
             response.body()?.let { resultResponse ->
                 breakingNewsPage++
-                if(breakingNewsResponse == null) {
+                if (breakingNewsResponse == null) {
                     breakingNewsResponse = resultResponse
                 } else {
                     val oldArticles = breakingNewsResponse?.articles
@@ -64,10 +68,10 @@ class NewsViewModel(
     }
 
 
-    private fun handleSearchNewsResponse(response: Response<NewsResponse>) : Resource<NewsResponse> {
-        if(response.isSuccessful) {
+    private fun handleSearchNewsResponse(response: Response<NewsResponse>): Resource<NewsResponse> {
+        if (response.isSuccessful) {
             response.body()?.let { resultResponse ->
-                if(searchNewsResponse == null || newSearchQuery != oldSearchQuery) {
+                if (searchNewsResponse == null || newSearchQuery != oldSearchQuery) {
                     searchNewsPage = 1
                     oldSearchQuery = newSearchQuery
                     searchNewsResponse = resultResponse
@@ -97,37 +101,36 @@ class NewsViewModel(
         newSearchQuery = searchQuery
         searchNews.postValue(Resource.Loading())
         try {
-            if(hasInternetConnection()) {
+            if (hasInternetConnection()) {
                 val response = repository.searchNews(searchQuery, searchNewsPage)
                 searchNews.postValue(handleSearchNewsResponse(response))
             } else {
                 searchNews.postValue(Resource.Error("No internet connection"))
             }
-        } catch(t: Throwable) {
-            when(t) {
+        } catch (t: Throwable) {
+            when (t) {
                 is IOException -> searchNews.postValue(Resource.Error("Network Failure"))
                 else -> searchNews.postValue(Resource.Error("Conversion Error"))
             }
         }
     }
 
-    private suspend fun safeBreakingNewsCall(countryCode: String) {
+    private suspend fun safeBreakingNewsCall(countryCode: String, url: String) {
         breakingNews.postValue(Resource.Loading())
         try {
-            if(hasInternetConnection()) {
-                val response = repository.getBreakingNews(countryCode, breakingNewsPage)
+            if (hasInternetConnection()) {
+                val response = repository.getBreakingNews(url, countryCode, breakingNewsPage)
                 breakingNews.postValue(handleBreakingNewsResponse(response))
             } else {
                 breakingNews.postValue(Resource.Error("No internet connection"))
             }
-        } catch(t: Throwable) {
-            when(t) {
+        } catch (t: Throwable) {
+            when (t) {
                 is IOException -> breakingNews.postValue(Resource.Error("Network Failure"))
                 else -> breakingNews.postValue(Resource.Error("Conversion Error"))
             }
         }
     }
-
 
 
     /* When we want to check the Connection of Internet, just copy below code in my project :) */

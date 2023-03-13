@@ -9,10 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mvvmnewsapp.R
 import com.example.mvvmnewsapp.model.Article
+import com.example.mvvmnewsapp.ui.fragments.BreakingNewsFragment
 import kotlinx.android.synthetic.main.item_article_preview.view.*
 
 
-class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
+class NewsAdapter(callbackForGetNewsWithId: BreakingNewsFragment? = null) : RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
 
     inner class ArticleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
@@ -60,4 +61,10 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
     fun setOnItemClickListener(listener: (Article) -> Unit) {
         onItemClickListener = listener
     }
+
+
+}
+
+interface CallbackForGetNewsWithId{
+    fun getNewsWithCallback(url: String?)
 }

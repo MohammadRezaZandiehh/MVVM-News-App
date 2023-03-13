@@ -1,6 +1,5 @@
 package com.example.mvvmnewsapp.ui.fragments
 
-import android.app.ProgressDialog.show
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -15,7 +14,6 @@ import com.example.mvvmnewsapp.ui.NewsActivity
 import com.example.mvvmnewsapp.viewModel.NewsViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_saved_news.*
-import java.util.*
 
 
 class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
